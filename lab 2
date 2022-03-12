@@ -1,0 +1,108 @@
+def larghezza(tab):             #la larghezza altro non è che il numero di righe non vuote
+    counter=0                       #POV:devi vedere lo schieramento in orizzontale non in verticale
+    for i in tab:
+        if i!=['000000000']:            #escludi le righe nulle, sono morti tutti
+            counter+=1
+    print(f'Larghezza: {counter}')
+
+
+def file(tab):
+    tot=[]
+    for i in tab:       #riga
+        counter=0
+        for j in i:         #stringa
+            for k in j:         #elemento
+                if k!='0':
+                    counter+=1              #per ogni riga conto gli elementi non nulli
+        tot.append(counter)
+    massimo=max(tot)
+    print(f'Numero di file: {massimo}')
+    return massimo
+
+
+def direction(tab):
+    for q in range(len(tab)):       #riga ex. ['000000000']
+        i=tab[q]
+        for j in range(len(i)):         #stringa ex. '000000000'
+            x=i[j]
+            for k in range(len(x)):         #elemento '0'
+                s=int(x[k])
+                if s==1:            #considero la prima fila dello schieramento
+                    if k==0:        #se sono nel primo indice
+                        if s>int(x[k+1]):       #valore>valore dopo
+                            direzione='EST'         #vado a est
+                        else:
+                            direzione='OVEST'   #altrimenti ad ovest
+
+                    elif k==(len(x)-1): #se  sono nell'ultimo indice
+                        if s<int(x[k-1]):      #valore<valore prima
+                            direzione='EST'         #vado a est
+                        else:
+                            direzione='OVEST'
+                    else:
+                        if s>int(x[k+1]) and s<int(x[k-1]):         #valore dopo più piccolo e valore prima più grande
+                            direzione='EST'     #vado EST
+                        else:
+                            direzione='OVEST'
+
+                elif k!=0 and k!=(len(x)-1) and s==int(x[k+1])==int(x[k-1])==1:  #valore prima=valore=valore dopo=1
+                    if j==0:                    #se sono nella prima riga della tabella
+                        if s<int(i[j+1][k]):       #
+                            direzione='NORD'
+                        else:
+                            direzione='SUD'
+                    elif j==(len(i)-1):         #se sono nell'ultima riga della tabella
+                        if int(i[j-1][k])==0:           #se l'elemento prima è 0
+                            direzione='NORD'                #vado a nord
+                        else:
+                            direzione='SUD'
+                    else:                       #in ogni altro caso
+                        if s<int(i[j+1][k]) and int(i[j-1][k])==0:    #valore giù>valore e valore su=0
+                            direzione='NORD'                #vado a NORD
+                        else:
+                            direzione='SUD'           #altrimenti a SUD
+
+    print (f'Direzione: {direzione}')
+
+
+def fila_buchi(tab, numerofile):
+    buchi=[]                #creo lista per raccogliere numero di buchi in TUTTE le file possibili
+    for k in range(0,9):            #ci sono massimo 9 file: itero sulle file
+        counter=0
+        for i in tab:               #['000000000']
+            for j in i:             #'000000000'
+                if j[k]=='0':
+                    counter+=1  #se counter=8 ho una fila solo buchi (fila NON valida)
+        buchi.append(counter)
+
+    file_bucate=[]                  #lista delle file valide
+    for v in buchi:
+        if v!=8:
+            file_bucate.append(v)       #aggiungo solo buchi delle file valide (dove non ho solo 0)
+
+    pos_bucato=file_bucate.index(max(file_bucate))              #qual è la fila con più buchi tra quelle valide?
+    bucato=numerofile-pos_bucato                #trovo la fila con più buchi
+
+    print(f'Fila con più buchi: {bucato}')
+
+
+def main():
+    INFILE=open('schieramento.txt', 'r')
+    tabella=[]                      #voglio creare una tabella
+    for riga in INFILE:
+        pos=riga.split()            #ogni \n è una riga
+        x=[]                        #tabella=lista di liste
+        for i in pos:
+            x.append(i)             #aggiungo stringa per ogni lista della lista
+        tabella.append(x)
+    #print (tabella) --> [['000000000'], ['000000000'], ['000000000'], ['032100000'], ['000100000'], ['002100000'], ['032100000'], ['000000000']]
+
+    INFILE.close()          #è importante chiudere file, anche sestai leggendo e te ne potresti fregare altamente FALLO
+
+#da qui in poi chiami le funzioni che hai definito prima quindi vedi da lì
+    larghezza(tabella)
+    n=file(tabella)
+    direction(tabella)
+    fila_buchi(tabella,n)
+
+main()              #e se non chiami il main non va niente genietto
